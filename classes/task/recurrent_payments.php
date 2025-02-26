@@ -180,7 +180,7 @@ class recurrent_payments extends \core\task\scheduled_task {
             $jsondata = json_encode($invoice);
 
             // Make payment.
-            $location = 'https://api.bepaid.ru/v3/payments';
+            $location = 'https://checkout.bepaid.by/ctp/api/checkouts';
             $options = [
               'CURLOPT_RETURNTRANSFER' => true,
               'CURLOPT_TIMEOUT' => 30,

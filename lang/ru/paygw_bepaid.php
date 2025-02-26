@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['abouttopay'] = 'Вы собираетесь пожертвовать на';
-$string['apikey'] = 'API Key';
+$string['apikey'] = 'Secret Key';
 $string['callback_help'] = 'Скопируйте эту строку и вставьте в "HTTP-уведомления" в настройках магазина в биПейд, и включите там уведомления "payment.succeeded" и "payment.canceled".';
 $string['callback_url'] = 'URL для уведомлений:';
 $string['cost'] = 'Стоимость записи';
@@ -35,6 +35,7 @@ $string['fixdesc'] = 'Фиксированный комментарий плат
 $string['fixdesc_help'] = 'Эта настройка устанавливает фиксированный комментарий для всех платежей, и отключает отображение описания комментария на странице платежа.';
 $string['gatewaydescription'] = 'биПейд — авторизованный платежный шлюз для обработки транзакций по кредитным картам.';
 $string['istestmode'] = 'Тестовый режим';
+$string['istestmode_help'] = 'В тестовом режиме нет рекуррентных платежей.';
 $string['maxcost'] = 'Максимальная цена';
 $string['password'] = 'Резервный пароль';
 $string['password_error'] = 'Введён неверный платёжный пароль';
