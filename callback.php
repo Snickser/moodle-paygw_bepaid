@@ -120,7 +120,7 @@ if ($config->recurrent == 1 && $config->recurrentperiod > 0 && $response->paymen
     $reason = 'Success completed';
 }
 
-if ($invoiceid !== $data->checkout->id) {
+if ($invoiceid !== $data->transaction->additional_data->vendor->token) {
     // Save new payment.
     $newpaymentid = helper::save_payment(
         $payable->get_account_id(),
