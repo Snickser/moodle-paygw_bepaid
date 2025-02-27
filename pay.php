@@ -175,7 +175,7 @@ $payment->checkout = [
         "currency" => $currency,
         "description" => $description,
         "tracking_id" => $paymentid,
-        "expired_at" => date("Y-m-d\\TH:i:sP", time() + 1800),
+        "expired_at" => date("Y-m-d\\TH:i:sP", time() + 3600),
     ],
     "settings" => [
         "return_url" => $CFG->wwwroot . '/payment/gateway/bepaid/return.php?ID=' . $paymentid,
