@@ -118,7 +118,11 @@ if ($response->checkout->status !== 'successful' || $response->checkout->finishe
     throw new \moodle_exception("FAIL. Invoice not paid.");
 }
 
-if ($config->recurrent == 1 && $config->recurrentperiod > 0 && $data->transaction->recurring_type == 'initial') {
+// Check recurrent payment.
+if (
+    $config->recurrent == 1 && ($config->recurrentperiod > 0 || $config->recurrentday > 0) &&
+    $data->transaction->recurring_type == 'initial'
+) {
     $bepaidtx->recurrent = time() + $config->recurrentperiod;
     $bepaidtx->invoiceid = $data->transaction->credit_card->token;
     $nextpay = userdate($bepaidtx->recurrent, "%d %B %Y, %k:%M");
@@ -126,55 +130,35 @@ if ($config->recurrent == 1 && $config->recurrentperiod > 0 && $data->transactio
     unset($bepaidtx->recurrent);
     $reason = 'Success recurrent';
 } else {
+    $nextpay = '';
     $reason = 'Success completed';
 }
 
-if ($invoiceid !== $data->transaction->additional_data->vendor->token) {
-    // Save new payment.
-    $newpaymentid = helper::save_payment(
-        $payable->get_account_id(),
-        $component,
-        $paymentarea,
-        $itemid,
-        $userid,
-        $outsumm,
-        $payment->currency,
-        'bepaid'
-    );
-
-    // Make new transaction.
-    $bepaidtx->invoiceid = $bepaidtx->paymentid;
-    $bepaidtx->paymentid = $newpaymentid;
-    $bepaidtx->timecreated = time();
-    $bepaidtx->id = $DB->insert_record('paygw_bepaid', $bepaidtx);
-    $reason = 'Success completed';
-} else {
-    // Update payment.
-    $payment->amount = $outsumm;
-    $payment->timemodified = time();
-    $DB->update_record('payments', $payment);
-    $newpaymentid = $paymentid;
-}
+// Update payment.
+$payment->amount = $outsumm;
+$payment->timemodified = time();
+$DB->update_record('payments', $payment);
 
 // Deliver order.
-helper::deliver_order($component, $paymentarea, $itemid, $newpaymentid, $userid);
+helper::deliver_order($component, $paymentarea, $itemid, $paymentid, $userid);
 
 // Notify user.
 notifications::notify(
     $userid,
     $outsumm,
     $payment->currency,
-    $newpaymentid,
+    $paymentid,
     $reason,
     $nextpay
 );
 
-// Write to DB.
+// Check test mode.
 if ($response->checkout->test == true) {
     $bepaidtx->success = 3;
 } else {
     $bepaidtx->success = 1;
 }
 
+// Write to DB.
 $DB->update_record('paygw_bepaid', $bepaidtx);
 die("OK");
