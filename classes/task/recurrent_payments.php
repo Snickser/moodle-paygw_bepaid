@@ -158,7 +158,7 @@ class recurrent_payments extends \core\task\scheduled_task {
                 $itemid,
                 $userid,
                 $cost,
-                $payable->get_currency(),
+                $payment->currency,
                 'bepaid'
             );
 
@@ -180,7 +180,7 @@ class recurrent_payments extends \core\task\scheduled_task {
                "credit_card" => [
                    "token" => $data->invoiceid,
                ],
-               "notification_url" => $CFG->wwwroot . '/payment/gateway/bepaid/recurrent.php',
+               "notification_url" => null,
                "tracking_id" => $newpaymentid,
             ];
 
@@ -209,17 +209,25 @@ class recurrent_payments extends \core\task\scheduled_task {
             $curl = new \curl();
             $jsonresponse = $curl->post($location, $jsondata, $options);
 
-
-            file_put_contents("/tmp/cccc", $jsonresponse . "\n\n", FILE_APPEND);
-
-
             $response = json_decode($jsonresponse);
 
             if (
                 $response->transaction->status == 'successful' &&
                 $response->transaction->type == 'charge'
             ) {
-                $newtx->invoiceid = $response->transaction->id;
+                // $newtx->invoiceid = $response->transaction->parent_uid;
+                $newtx->invoiceid = $data->paymentid;
+
+                // Write to DB.
+                if ($response->transaction->test == true) {
+                    $newtx->success = 3;
+                } else {
+                    $newtx->success = 1;
+                }
+
+                // Deliver order.
+                helper::deliver_order($component, $paymentarea, $itemid, $newpaymentid, $userid);
+
                 mtrace("$data->paymentid done.");
                 // Notify user.
                 notifications::notify(
@@ -227,8 +235,14 @@ class recurrent_payments extends \core\task\scheduled_task {
                     $cost,
                     $payment->currency,
                     $data->paymentid,
-                    'Recurrent created'
+                    'Success recurrent'
                 );
+
+                $data->recurrent = time() + $config->recurrentperiod;
+
+                // Write status.
+                $DB->update_record('paygw_bepaid', $data);
+                $DB->update_record('paygw_bepaid', $newtx);
             } else {
                 echo serialize($jsonresponse) . "\n";
                 mtrace("$data->paymentid error");
@@ -243,9 +257,6 @@ class recurrent_payments extends \core\task\scheduled_task {
                     'Recurrent error'
                 );
             }
-            // Write status.
-            $DB->update_record('paygw_bepaid', $data);
-            $DB->update_record('paygw_bepaid', $newtx);
         }
 
         mtrace('End');
