@@ -3,7 +3,7 @@
 [![](https://img.shields.io/github/v/release/Snickser/moodle-paygw_bepaid.svg)](https://github.com/Snickser/moodle-paygw_bepaid/releases)
 [![Build Status](https://github.com/Snickser/moodle-paygw_bepaid/actions/workflows/moodle-ci.yml/badge.svg)](https://github.com/Snickser/moodle-paygw_bepaid/actions/workflows/moodle-ci.yml)
 
-![alt text](https://github.com/Snickser/moodle-paygw_bepaid/blob/af9c9a77d460549edd31b77125fa66ab175a8740/pix/img.svg)
+![alt text](https://raw.githubusercontent.com/Snickser/moodle-paygw_bepaid/809333a08256b99ff3a7143ce2fbc0ee9fba6b24/pix/img.svg)
 
 https://bepaid.by
 
@@ -15,6 +15,7 @@ https://bepaid.by
 + Отображение продолжительности обучения (для enrol_yafee и mod_gwpaymets), если она установлена.
 + Поддержка пароля из модуля курса (mod_gwpaymets).
 + Оповещение пользователя при успешном платеже.
++ Рекуррентные платежи (только совместно с моим report_payments).
 
 ## Рекомендации
 
