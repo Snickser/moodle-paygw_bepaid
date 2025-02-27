@@ -222,6 +222,7 @@ class recurrent_payments extends \core\task\scheduled_task {
                     $newtx->success = 1;
                 }
 
+                $data->recurrent = time() + $config->recurrentperiod;
                 $newtx->invoiceid = $data->paymentid;
 
                 // Deliver order.
@@ -234,10 +235,10 @@ class recurrent_payments extends \core\task\scheduled_task {
                     $cost,
                     $payment->currency,
                     $data->paymentid,
-                    'Success recurrent'
+                    'Success recurrent',
+                    userdate($data->recurrent, "%d %B %k:00")
                 );
 
-                $data->recurrent = time() + $config->recurrentperiod;
 
                 // Write status.
                 $DB->update_record('paygw_bepaid', $data);

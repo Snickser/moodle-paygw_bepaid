@@ -82,6 +82,18 @@ $userid      = $payment->userid;
 $config = (object) helper::get_gateway_configuration($component, $paymentarea, $itemid, 'bepaid');
 $payable = helper::get_payable($component, $paymentarea, $itemid);
 
+// Check public key.
+$signature = clean_param($_SERVER['HTTP_CONTENT_SIGNATURE'], PARAM_RAW);
+$publickey = str_replace(["\r\n", "\n"], '', $config->pubkey);
+$publickey = chunk_split($publickey, 64);
+$publickey = "-----BEGIN PUBLIC KEY-----\n$publickey-----END PUBLIC KEY-----";
+$signature = base64_decode($signature);
+$key = openssl_pkey_get_public($publickey);
+$crc = openssl_verify($source, $signature, $key, OPENSSL_ALGO_SHA256);
+if (!$crc) {
+    throw new \moodle_exception('FAIL. Signature not valid.');
+}
+
 // Check payment on site.
 $location = 'https://checkout.bepaid.by/ctp/api/checkouts/' . $invoiceid;
 $options = [
