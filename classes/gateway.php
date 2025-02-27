@@ -36,7 +36,7 @@ class gateway extends \core_payment\gateway {
     public static function get_supported_currencies(): array {
         // 3-character ISO-4217: https://en.wikipedia.org/wiki/ISO_4217#Active_codes.
         return [
-            'BYN', 'USD', 'EUR', 'RUB',
+            'BYR', 'GPB', 'USD', 'EUR', 'RUB',
         ];
     }
 
@@ -57,6 +57,10 @@ class gateway extends \core_payment\gateway {
         $mform->addElement('passwordunmask', 'apikey', get_string('apikey', 'paygw_bepaid'), ['size' => 50]);
         $mform->setType('apikey', PARAM_TEXT);
         $mform->addRule('apikey', get_string('required'), 'required', null, 'client');
+
+        $mform->addElement('passwordunmask', 'pubkey', get_string('pubkey', 'paygw_bepaid'), ['size' => 50]);
+        $mform->setType('pubkey', PARAM_TEXT);
+        $mform->addRule('pubkey', get_string('required'), 'required', null, 'client');
 
         $mform->addElement(
             'advcheckbox',

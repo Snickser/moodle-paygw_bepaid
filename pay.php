@@ -46,6 +46,9 @@ $costself    = optional_param('costself', null, PARAM_TEXT);
 $config = (object) helper::get_gateway_configuration($component, $paymentarea, $itemid, 'bepaid');
 $payable = helper::get_payable($component, $paymentarea, $itemid);// Get currency and payment amount.
 $currency = $payable->get_currency();
+if ($currency == 'BYR') {
+    $currency = 'BYN';
+}
 $surcharge = helper::get_gateway_surcharge('bepaid');// In case user uses surcharge.
 // TODO: Check if currency is IDR. If not, then something went really wrong in config.
 $cost = helper::get_rounded_cost($payable->get_amount(), $payable->get_currency(), $surcharge);
@@ -158,49 +161,54 @@ $paymentid = helper::save_payment(
     $itemid,
     $userid,
     $cost,
-    $payable->get_currency(),
+    $currency,
     'bepaid'
 );
 
 // Make invoice.
 $payment = new stdClass();
-$payment->amount = [ "value" => $cost, "currency" => $currency ];
-$payment->confirmation = [
-  "type" => "redirect",
-  "return_url" => $CFG->wwwroot . '/payment/gateway/bepaid/return.php?ID=' . $paymentid,
+
+$payment->checkout = [
+    "transaction_type" => 'payment',
+    "test" => true,
+    "order" => [
+        "amount" => $cost*100,
+        "currency" => $currency,
+        "description" => $description,
+        "tracking_id" => $paymentid,
+        "expired_at" => date("Y-m-d\\TH:i:sP", time() + 1800),
+    ],
+    "settings" => [
+        "return_url" => $CFG->wwwroot . '/payment/gateway/bepaid/return.php?ID=' . $paymentid,
+	"fail_url" => $CFG->wwwroot . '/payment/gateway/bepaid/return.php?ID=' . $paymentid,
+	"cancel_url" => $CFG->wwwroot . '/payment/gateway/bepaid/return.php?ID=' . $paymentid,
+	"notification_url" => $CFG->wwwroot . '/payment/gateway/bepaid/callback.php?ID=' . $paymentid,
+	"auto_return" => 10,
+	"language" =>  current_language(),
+	"customer_fields" => [
+	    "visible" => ["email"],
+	    "read_only" => ["email"],
+	],
+    ],
+    "customer" => [
+	"email" => $USER->email,
+    ],
 ];
-$payment->capture = "true";
-$payment->description = $description;
+
+
 if (!empty($config->paymentmethod)) {
     $payment->payment_method_data = [
     "type" => $config->paymentmethod,
     ];
 }
-$payment->receipt = [
- "customer" => [
-   "email" => $USER->email,
- ],
- "items" => [
-   [
-    "description" => $description,
-    "quantity" => 1,
-    "amount" => [
-       "value" => $cost,
-       "currency" => $currency,
-    ],
-    "vat_code" => $config->vatcode,
-    "payment_subject" => "payment",
-    "payment_mode" => "full_payment",
-   ],
- ],
- "tax_system_code" => $config->taxsystemcode,
-];
 
 if ($config->recurrent == 1 && $config->recurrentperiod > 0) {
     $payment->save_payment_method = "true";
 }
 
 $jsondata = json_encode($payment);
+
+file_put_contents("/tmp/aaaa", $jsondata."\n\n", FILE_APPEND);
 
 // Make payment.
 $location = 'https://checkout.bepaid.by/ctp/api/checkouts';
@@ -221,19 +229,21 @@ $options = [
 $curl = new curl();
 $jsonresponse = $curl->post($location, $jsondata, $options);
 
+file_put_contents("/tmp/aaaa", serialize($jsonresponse)."\n\n", FILE_APPEND);
+
 $response = json_decode($jsonresponse);
 
-if (!isset($response->confirmation)) {
+if (!isset($response->checkout)) {
     $DB->delete_records('paygw_bepaid', ['id' => $transactionid]);
     $error = $response->description;
     throw new \moodle_exception(get_string('payment_error', 'paygw_bepaid') . " ($error)", 'paygw_bepaid');
 }
 
-$confirmationurl = $response->confirmation->confirmation_url;
+$confirmationurl = $response->checkout->redirect_url;
 
 if (empty($confirmationurl)) {
     $DB->delete_records('paygw_bepaid', ['id' => $transactionid]);
-    $error = $response->description;
+    $error = $response;
     throw new \moodle_exception(get_string('payment_error', 'paygw_bepaid') . " ($error)", 'paygw_bepaid');
 }
 
@@ -250,7 +260,7 @@ if ($config->sendlinkmsg || is_siteadmin()) {
 
 // Write to DB.
 $paygwdata->paymentid = $paymentid;
-$paygwdata->invoiceid = $response->id;
+$paygwdata->invoiceid = $response->checkout->token;
 $DB->update_record('paygw_bepaid', $paygwdata);
 
 redirect($confirmationurl);

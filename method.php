@@ -51,6 +51,9 @@ $params = [
 $config = (object) helper::get_gateway_configuration($component, $paymentarea, $itemid, 'bepaid');
 $payable = helper::get_payable($component, $paymentarea, $itemid);// Get currency and payment amount.
 $currency = $payable->get_currency();
+if ($currency == 'BYR') {
+    $currency = 'BYN';
+}
 $surcharge = helper::get_gateway_surcharge('bepaid');// In case user uses surcharge.
 $fee = helper::get_rounded_cost($payable->get_amount(), $currency, $surcharge);
 
