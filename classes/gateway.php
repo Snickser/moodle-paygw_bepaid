@@ -186,12 +186,7 @@ class gateway extends \core_payment\gateway {
         $mform->setType('maxcost', PARAM_TEXT);
         $mform->disabledIf('maxcost', 'fixcost', "neq", 0);
 
-        global $CFG;
-        $mform->addElement('html', '<div class="label-callback" style="background: pink; padding: 15px;">' .
-                                    get_string('callback_url', 'paygw_bepaid') . '<br>');
-        $mform->addElement('html', $CFG->wwwroot . '/payment/gateway/bepaid/callback.php<br>');
-        $mform->addElement('html', get_string('callback_help', 'paygw_bepaid') . '</div><br>');
-
+        $mform->addElement('html', '<hr>');
         $plugininfo = \core_plugin_manager::instance()->get_plugin_info('paygw_bepaid');
         $donate = get_string('donate', 'paygw_bepaid', $plugininfo);
         $mform->addElement('html', $donate);
