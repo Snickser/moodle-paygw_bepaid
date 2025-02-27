@@ -215,15 +215,14 @@ class recurrent_payments extends \core\task\scheduled_task {
                 $response->transaction->status == 'successful' &&
                 $response->transaction->type == 'charge'
             ) {
-                // $newtx->invoiceid = $response->transaction->parent_uid;
-                $newtx->invoiceid = $data->paymentid;
-
-                // Write to DB.
+                // Set test status.
                 if ($response->transaction->test == true) {
                     $newtx->success = 3;
                 } else {
                     $newtx->success = 1;
                 }
+
+                $newtx->invoiceid = $data->paymentid;
 
                 // Deliver order.
                 helper::deliver_order($component, $paymentarea, $itemid, $newpaymentid, $userid);
