@@ -239,7 +239,6 @@ class recurrent_payments extends \core\task\scheduled_task {
                     userdate($data->recurrent, "%d %B %k:00")
                 );
 
-
                 // Write status.
                 $DB->update_record('paygw_bepaid', $data);
                 $DB->update_record('paygw_bepaid', $newtx);
