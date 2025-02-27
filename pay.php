@@ -207,8 +207,6 @@ if ($config->recurrent == 1 && ($config->recurrentperiod > 0 || $config->recurre
 
 $jsondata = json_encode($payment);
 
-file_put_contents("/tmp/aaaa", $jsondata . "\n\n", FILE_APPEND);
-
 // Make payment.
 $location = 'https://checkout.bepaid.by/ctp/api/checkouts';
 $options = [
@@ -227,8 +225,6 @@ $options = [
 ];
 $curl = new curl();
 $jsonresponse = $curl->post($location, $jsondata, $options);
-
-file_put_contents("/tmp/aaaa", $jsonresponse . "\n\n", FILE_APPEND);
 
 $response = json_decode($jsonresponse);
 
