@@ -35,8 +35,6 @@ defined('MOODLE_INTERNAL') || die();
 $source = file_get_contents('php://input');
 $data = json_decode($source, false);
 
-file_put_contents("/tmp/bbbb", $source . "\n\n", FILE_APPEND);
-
 // Check json.
 if ($data === null) {
     $lasterror = json_last_error_msg();
@@ -103,8 +101,6 @@ $curl = new curl();
 $jsonresponse = $curl->get($location, null, $options);
 
 $response = json_decode($jsonresponse, false);
-
-file_put_contents("/tmp/bbbb", serialize($response->checkout->status) . "\n\n", FILE_APPEND);
 
 if ($response->checkout->status !== 'successful' || $response->checkout->finished != true) {
     throw new \moodle_exception("FAIL. Invoice not paid.");
