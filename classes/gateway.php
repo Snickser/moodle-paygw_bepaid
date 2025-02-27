@@ -68,7 +68,6 @@ class gateway extends \core_payment\gateway {
             get_string('istestmode', 'paygw_bepaid')
         );
         $mform->setType('istestmode', PARAM_INT);
-        $mform->addHelpButton('istestmode', 'istestmode', 'paygw_bepaid');
 
         $mform->addElement(
             'advcheckbox',

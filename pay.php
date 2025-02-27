@@ -169,7 +169,6 @@ $paymentid = helper::save_payment(
 $payment = new stdClass();
 $payment->checkout = [
     "transaction_type" => 'payment',
-    "test" => true,
     "order" => [
         "amount" => $cost * 100,
         "currency" => $currency,
@@ -194,9 +193,14 @@ $payment->checkout = [
     ],
 ];
 
+if ($config->istestmode) {
+    $payment->checkout['test'] = true;
+}
+
+// Make recurrent data.
 if ($config->recurrent == 1 && ($config->recurrentperiod > 0 || $config->recurrentday > 0)) {
     $payment->checkout['order']['additional_data'] = [ "contract" => ['recurring'] ];
-    $payment->checkout['settings']['save_card_toggle'] = [ "display" => true ];
+    $payment->checkout['settings']['save_card_toggle'] = [ "display" => false ];
     $payment->checkout['settings']['customer_contract'] = true;
     $payment->checkout['payment_method'] = [ 'types' => ['credit_card'] ];
 }

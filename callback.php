@@ -106,8 +106,9 @@ if ($response->checkout->status !== 'successful' || $response->checkout->finishe
     throw new \moodle_exception("FAIL. Invoice not paid.");
 }
 
-if ($config->recurrent == 1 && $config->recurrentperiod > 0 && $response->payment_method->saved == true) {
+if ($config->recurrent == 1 && $config->recurrentperiod > 0 && $data->transaction->recurring_type == 'initial') {
     $bepaidtx->recurrent = time() + $config->recurrentperiod;
+    $bepaidtx->invoiceid = $data->transaction->credit_card->token;
     $nextpay = userdate($bepaidtx->recurrent, "%d %B %Y, %k:%M");
     $DB->update_record('paygw_bepaid', $bepaidtx);
     unset($bepaidtx->recurrent);
