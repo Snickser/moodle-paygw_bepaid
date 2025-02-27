@@ -148,47 +148,60 @@ class recurrent_payments extends \core\task\scheduled_task {
                     $cost = helper::get_rounded_cost($payable->get_amount(), $payable->get_currency(), $surcharge);
             }
 
-            // Make invoice.
-            $invoice = new \stdClass();
-            $invoice->amount = [ "value" => $cost, "currency" => $payment->currency ];
-            $invoice->capture = "true";
-            $invoice->payment_method_id = $data->invoiceid;
-            $invoice->description = "Recurrent payment " . $data->paymentid;
-
             $user = \core_user::get_user($userid);
 
-            $invoice->receipt = [
-              "customer" => [
-                "email" => $user->email,
-              ],
-              "items" => [
-                [
-                  "description" => $invoice->description,
-                  "quantity" => 1,
-                  "amount" => [
-                    "value" => $cost,
-                    "currency" => $payment->currency,
-                  ],
-                  "vat_code" => $config->vatcode,
-                  "payment_subject" => "payment",
-                  "payment_mode" => "full_payment",
-                ],
-              ],
-              "tax_system_code" => $config->taxsystemcode,
+            // Save payment.
+            $newpaymentid = helper::save_payment(
+                $payable->get_account_id(),
+                $component,
+                $paymentarea,
+                $itemid,
+                $userid,
+                $cost,
+                $payable->get_currency(),
+                'bepaid'
+            );
+
+            // Make new transaction.
+            $newtx = new \stdClass();
+            $newtx->paymentid = $newpaymentid;
+            $newtx->courseid = $data->courseid;
+            $newtx->groupnames = $data->groupnames;
+            $newtx->timecreated = time();
+            $invid = $DB->insert_record('paygw_bepaid', $newtx);
+            $newtx->id = $invid;
+
+            // Make invoice.
+            $invoice = new \stdClass();
+            $invoice->request = [
+               "amount" => $cost * 100,
+               "currency" => $payment->currency,
+               "description" => "Recurrent payment " . $data->paymentid,
+               "credit_card" => [
+                   "token" => $data->invoiceid,
+               ],
+               "notification_url" => $CFG->wwwroot . '/payment/gateway/bepaid/recurrent.php',
+               "tracking_id" => $newpaymentid,
             ];
+
+            if ($config->istestmode) {
+                $invoice->request['test'] = true;
+            }
 
             $jsondata = json_encode($invoice);
 
             // Make payment.
-            $location = 'https://checkout.bepaid.by/ctp/api/checkouts';
+            $location = 'https://gateway.bepaid.by/services/credit_cards/charges';
             $options = [
               'CURLOPT_RETURNTRANSFER' => true,
               'CURLOPT_TIMEOUT' => 30,
               'CURLOPT_HTTP_VERSION' => CURL_HTTP_VERSION_1_1,
               'CURLOPT_SSLVERSION' => CURL_SSLVERSION_TLSv1_2,
               'CURLOPT_HTTPHEADER' => [
-                'Idempotence-Key: ' . uniqid($data->paymentid, true),
+                'RequestID: ' . uniqid($data->paymentid, true),
                 'Content-Type: application/json',
+                'Accept: application/json',
+                'X-API-Version: 2',
               ],
               'CURLOPT_HTTPAUTH' => CURLAUTH_BASIC,
               'CURLOPT_USERPWD' => $config->shopid . ':' . $config->apikey,
@@ -196,12 +209,17 @@ class recurrent_payments extends \core\task\scheduled_task {
             $curl = new \curl();
             $jsonresponse = $curl->post($location, $jsondata, $options);
 
+
+            file_put_contents("/tmp/cccc", $jsonresponse . "\n\n", FILE_APPEND);
+
+
             $response = json_decode($jsonresponse);
 
             if (
-                ($response->status == 'succeeded' || $response->status == 'pending') &&
-                $response->paid == true && $response->payment_method->saved == true
+                $response->transaction->status == 'successful' &&
+                $response->transaction->type == 'charge'
             ) {
+                $newtx->invoiceid = $response->transaction->id;
                 mtrace("$data->paymentid done.");
                 // Notify user.
                 notifications::notify(
@@ -225,6 +243,9 @@ class recurrent_payments extends \core\task\scheduled_task {
                     'Recurrent error'
                 );
             }
+            // Write status.
+            $DB->update_record('paygw_bepaid', $data);
+            $DB->update_record('paygw_bepaid', $newtx);
         }
 
         mtrace('End');

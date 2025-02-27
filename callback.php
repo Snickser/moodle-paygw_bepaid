@@ -45,6 +45,8 @@ if ($data->transaction->status == 'pending') {
     die('OK');
 }
 
+file_put_contents("/tmp/bbbb", $source . "\n\n", FILE_APPEND);
+
 if ($data->transaction->status !== 'successful') {
     throw new \moodle_exception('FAIL. Payment not successful');
 }
@@ -100,14 +102,17 @@ $options = [
 $curl = new curl();
 $jsonresponse = $curl->get($location, null, $options);
 
+file_put_contents("/tmp/bbbb", $jsonresponse . "\n\n", FILE_APPEND);
+
 $response = json_decode($jsonresponse, false);
 
 if ($response->checkout->status !== 'successful' || $response->checkout->finished != true) {
     throw new \moodle_exception("FAIL. Invoice not paid.");
 }
 
-if ($config->recurrent == 1 && $config->recurrentperiod > 0 && $response->payment_method->saved == true) {
+if ($config->recurrent == 1 && $config->recurrentperiod > 0 && $data->transaction->recurring_type == 'initial') {
     $bepaidtx->recurrent = time() + $config->recurrentperiod;
+    $bepaidtx->invoiceid = $data->transaction->credit_card->token;
     $nextpay = userdate($bepaidtx->recurrent, "%d %B %Y, %k:%M");
     $DB->update_record('paygw_bepaid', $bepaidtx);
     unset($bepaidtx->recurrent);
