@@ -1,4 +1,4 @@
-# bepaid payment gateway plugin for Moodle.
+# bePaid payment gateway plugin for Moodle.
 
 [![](https://img.shields.io/github/v/release/Snickser/moodle-paygw_bepaid.svg)](https://github.com/Snickser/moodle-paygw_bepaid/releases)
 [![Build Status](https://github.com/Snickser/moodle-paygw_bepaid/actions/workflows/moodle-ci.yml/badge.svg)](https://github.com/Snickser/moodle-paygw_bepaid/actions/workflows/moodle-ci.yml)
