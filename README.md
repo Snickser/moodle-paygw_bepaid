@@ -3,7 +3,7 @@
 [![](https://img.shields.io/github/v/release/Snickser/moodle-paygw_bepaid.svg)](https://github.com/Snickser/moodle-paygw_bepaid/releases)
 [![Build Status](https://github.com/Snickser/moodle-paygw_bepaid/actions/workflows/moodle-ci.yml/badge.svg)](https://github.com/Snickser/moodle-paygw_bepaid/actions/workflows/moodle-ci.yml)
 
-![alt text](https://raw.githubusercontent.com/Snickser/moodle-paygw_bepaid/809333a08256b99ff3a7143ce2fbc0ee9fba6b24/pix/img.svg)
+![alt text](https://raw.githubusercontent.com/Snickser/moodle-paygw_bepaid/473d0f0c18c1525a60b81fedc89eac2e45f5ed6f/pix/img.svg)
 
 https://bepaid.by
 
