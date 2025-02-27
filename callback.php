@@ -45,8 +45,6 @@ if ($data->transaction->status == 'pending') {
     die('OK');
 }
 
-file_put_contents("/tmp/bbbb", $source . "\n\n", FILE_APPEND);
-
 if ($data->transaction->status !== 'successful') {
     throw new \moodle_exception('FAIL. Payment not successful');
 }
@@ -101,8 +99,6 @@ $options = [
 ];
 $curl = new curl();
 $jsonresponse = $curl->get($location, null, $options);
-
-file_put_contents("/tmp/bbbb", $jsonresponse . "\n\n", FILE_APPEND);
 
 $response = json_decode($jsonresponse, false);
 
