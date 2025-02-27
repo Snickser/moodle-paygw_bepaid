@@ -167,48 +167,40 @@ $paymentid = helper::save_payment(
 
 // Make invoice.
 $payment = new stdClass();
-
 $payment->checkout = [
     "transaction_type" => 'payment',
     "test" => true,
     "order" => [
-        "amount" => $cost*100,
+        "amount" => $cost * 100,
         "currency" => $currency,
         "description" => $description,
         "tracking_id" => $paymentid,
         "expired_at" => date("Y-m-d\\TH:i:sP", time() + 1800),
     ],
     "settings" => [
-        "return_url" => $CFG->wwwroot . '/payment/gateway/bepaid/return.php?ID=' . $paymentid,
-	"fail_url" => $CFG->wwwroot . '/payment/gateway/bepaid/return.php?ID=' . $paymentid,
-	"cancel_url" => $CFG->wwwroot . '/payment/gateway/bepaid/return.php?ID=' . $paymentid,
-	"notification_url" => $CFG->wwwroot . '/payment/gateway/bepaid/callback.php?ID=' . $paymentid,
-	"auto_return" => 10,
-	"language" =>  current_language(),
-	"customer_fields" => [
-	    "visible" => ["email"],
-	    "read_only" => ["email"],
-	],
+    "return_url" => $CFG->wwwroot . '/payment/gateway/bepaid/return.php?ID=' . $paymentid,
+    "fail_url" => $CFG->wwwroot . '/payment/gateway/bepaid/return.php?ID=' . $paymentid,
+    "cancel_url" => $CFG->wwwroot . '/payment/gateway/bepaid/return.php?ID=' . $paymentid,
+    "notification_url" => $CFG->wwwroot . '/payment/gateway/bepaid/callback.php?ID=' . $paymentid,
+    "auto_return" => 10,
+    "language" => current_language(),
+    "customer_fields" => [
+        "visible" => ["email"],
+        "read_only" => ["email"],
+        ],
     ],
     "customer" => [
-	"email" => $USER->email,
+    "email" => $USER->email,
     ],
 ];
 
-
-if (!empty($config->paymentmethod)) {
-    $payment->payment_method_data = [
-    "type" => $config->paymentmethod,
-    ];
-}
-
 if ($config->recurrent == 1 && $config->recurrentperiod > 0) {
-    $payment->save_payment_method = "true";
+    $payment->checkout->settings->auto_pay = true;
 }
 
 $jsondata = json_encode($payment);
 
-file_put_contents("/tmp/aaaa", $jsondata."\n\n", FILE_APPEND);
+file_put_contents("/tmp/aaaa", $jsondata . "\n\n", FILE_APPEND);
 
 // Make payment.
 $location = 'https://checkout.bepaid.by/ctp/api/checkouts';
@@ -229,7 +221,7 @@ $options = [
 $curl = new curl();
 $jsonresponse = $curl->post($location, $jsondata, $options);
 
-file_put_contents("/tmp/aaaa", serialize($jsonresponse)."\n\n", FILE_APPEND);
+file_put_contents("/tmp/aaaa", serialize($jsonresponse) . "\n\n", FILE_APPEND);
 
 $response = json_decode($jsonresponse);
 

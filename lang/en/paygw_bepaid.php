@@ -95,6 +95,7 @@ $string['privacy:metadata:paygw_bepaid:invoiceid'] = 'Invoice id';
 $string['privacy:metadata:paygw_bepaid:paygw_bepaid'] = 'Store some data';
 $string['privacy:metadata:paygw_bepaid:shopid'] = 'Shopid';
 $string['privacy:metadata:paygw_bepaid:success'] = 'Status';
+$string['pubkey'] = 'Public key';
 $string['recurrent'] = 'Enable recurring payments';
 $string['recurrent_help'] = 'Enable recurring payments';
 $string['recurrentcost'] = 'Recurring payment cost';
