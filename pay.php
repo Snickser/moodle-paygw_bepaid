@@ -178,15 +178,15 @@ $payment->checkout = [
         "expired_at" => date("Y-m-d\\TH:i:sP", time() + 1800),
     ],
     "settings" => [
-    "return_url" => $CFG->wwwroot . '/payment/gateway/bepaid/return.php?ID=' . $paymentid,
-    "fail_url" => $CFG->wwwroot . '/payment/gateway/bepaid/return.php?ID=' . $paymentid,
-    "cancel_url" => $CFG->wwwroot . '/payment/gateway/bepaid/return.php?ID=' . $paymentid,
-    "notification_url" => $CFG->wwwroot . '/payment/gateway/bepaid/callback.php?ID=' . $paymentid,
-    "auto_return" => 10,
-    "language" => current_language(),
-    "customer_fields" => [
-        "visible" => ["email"],
-        "read_only" => ["email"],
+        "return_url" => $CFG->wwwroot . '/payment/gateway/bepaid/return.php?ID=' . $paymentid,
+        "fail_url" => $CFG->wwwroot . '/payment/gateway/bepaid/return.php?ID=' . $paymentid,
+        "cancel_url" => $CFG->wwwroot . '/payment/gateway/bepaid/return.php?ID=' . $paymentid,
+        "notification_url" => $CFG->wwwroot . '/payment/gateway/bepaid/callback.php',
+        "auto_return" => 30,
+        "language" => current_language(),
+        "customer_fields" => [
+            "visible" => ['email'],
+            "read_only" => ['email'],
         ],
     ],
     "customer" => [
@@ -194,8 +194,11 @@ $payment->checkout = [
     ],
 ];
 
-if ($config->recurrent == 1 && $config->recurrentperiod > 0) {
-    $payment->checkout->settings->auto_pay = true;
+if ($config->recurrent == 1 && ($config->recurrentperiod > 0 || $config->recurrentday > 0)) {
+    $payment->checkout['order']['additional_data'] = [ "contract" => ['recurring'] ];
+    $payment->checkout['settings']['save_card_toggle'] = [ "display" => true ];
+    $payment->checkout['settings']['customer_contract'] = true;
+    $payment->checkout['payment_method'] = [ 'types' => ['credit_card'] ];
 }
 
 $jsondata = json_encode($payment);
@@ -210,7 +213,7 @@ $options = [
     'CURLOPT_HTTP_VERSION' => CURL_HTTP_VERSION_1_1,
     'CURLOPT_SSLVERSION' => CURL_SSLVERSION_TLSv1_2,
     'CURLOPT_HTTPHEADER' => [
-        'Idempotence-Key: ' . uniqid($paymentid, true),
+        'RequestID: ' . uniqid($paymentid, true),
         'Content-Type: application/json',
         'Accept: application/json',
         'X-API-Version: 2',
