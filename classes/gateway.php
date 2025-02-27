@@ -36,7 +36,7 @@ class gateway extends \core_payment\gateway {
     public static function get_supported_currencies(): array {
         // 3-character ISO-4217: https://en.wikipedia.org/wiki/ISO_4217#Active_codes.
         return [
-            'BYR', 'GPB', 'USD', 'EUR', 'RUB',
+            'BYR', 'GBP', 'USD', 'EUR', 'RUB',
         ];
     }
 
@@ -58,7 +58,7 @@ class gateway extends \core_payment\gateway {
         $mform->setType('apikey', PARAM_TEXT);
         $mform->addRule('apikey', get_string('required'), 'required', null, 'client');
 
-        $mform->addElement('passwordunmask', 'pubkey', get_string('pubkey', 'paygw_bepaid'), ['size' => 50]);
+        $mform->addElement('text', 'pubkey', get_string('pubkey', 'paygw_bepaid'), ['size' => 50]);
         $mform->setType('pubkey', PARAM_TEXT);
         $mform->addRule('pubkey', get_string('required'), 'required', null, 'client');
 
@@ -69,55 +69,6 @@ class gateway extends \core_payment\gateway {
         );
         $mform->setType('istestmode', PARAM_INT);
         $mform->addHelpButton('istestmode', 'istestmode', 'paygw_bepaid');
-
-        $options = [
-        1 => 1,
-        2 => 2,
-        3 => 3,
-        4 => 4,
-        5 => 5,
-        6 => 6,
-        ];
-        $mform->addElement(
-            'select',
-            'taxsystemcode',
-            get_string('taxsystemcode', 'paygw_bepaid'),
-            $options
-        );
-        $mform->setType('taxsystemcode', PARAM_INT);
-        $mform->addHelpButton('taxsystemcode', 'taxsystemcode', 'paygw_bepaid');
-
-        $options = [
-        1 => get_string('no'),
-        2 => "0%",
-        3 => "10%",
-        4 => "20%",
-        5 => "10/110",
-        6 => "20/120",
-        ];
-        $mform->addElement(
-            'select',
-            'vatcode',
-            get_string('vatcode', 'paygw_bepaid'),
-            $options,
-        );
-        $mform->setType('vatcode', PARAM_INT);
-        $mform->addHelpButton('vatcode', 'vatcode', 'paygw_bepaid');
-
-        $options = [
-        '' => get_string('bepaid', 'paygw_bepaid'),
-        'bank_card' => get_string('plastic', 'paygw_bepaid'),
-        'yoo_money' => get_string('wallet', 'paygw_bepaid'),
-        'sbp' => get_string('sbp', 'paygw_bepaid'),
-        ];
-        $mform->addElement(
-            'select',
-            'paymentmethod',
-            get_string('paymentmethod', 'paygw_bepaid'),
-            $options,
-        );
-        $mform->setType('paymentmethod', PARAM_TEXT);
-        $mform->addHelpButton('paymentmethod', 'paymentmethod', 'paygw_bepaid');
 
         $mform->addElement(
             'advcheckbox',
