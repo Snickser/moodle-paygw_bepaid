@@ -177,5 +177,4 @@ if ($response->checkout->test == true) {
 }
 
 $DB->update_record('paygw_bepaid', $bepaidtx);
-
 die("OK");
