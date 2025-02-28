@@ -112,6 +112,11 @@ $options = [
 $curl = new curl();
 $jsonresponse = $curl->get($location, null, $options);
 
+// Check curl errors.
+if (!empty($curl->errno)) {
+    throw new \moodle_exception("FAIL. Curl error.");
+}
+
 $response = json_decode($jsonresponse, false);
 
 if ($response->checkout->status !== 'successful' || $response->checkout->finished != true) {

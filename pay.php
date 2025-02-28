@@ -225,8 +225,15 @@ $options = [
 $curl = new curl();
 $jsonresponse = $curl->post($location, $jsondata, $options);
 
+// Check errors.
+if (!empty($curl->errno)) {
+    $error = serialize($jsonresponse);
+    throw new \moodle_exception(get_string('payment_error', 'paygw_bepaid') . " ($error)", 'paygw_bepaid');
+}
+
 $response = json_decode($jsonresponse);
 
+// Check errors.
 if (!isset($response->checkout)) {
     $DB->delete_records('paygw_bepaid', ['id' => $transactionid]);
     $error = serialize($response);
@@ -235,6 +242,7 @@ if (!isset($response->checkout)) {
 
 $confirmationurl = $response->checkout->redirect_url;
 
+// Check errors.
 if (empty($confirmationurl)) {
     $DB->delete_records('paygw_bepaid', ['id' => $transactionid]);
     $error = serialize($response);
