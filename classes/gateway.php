@@ -114,7 +114,7 @@ class gateway extends \core_payment\gateway {
         $mform->hideIf('recurrentcost', 'recurrent', "neq", 1);
 
         $plugininfo = \core_plugin_manager::instance()->get_plugin_info('report_payments');
-        if ($plugininfo->versiondisk < 3024070800) {
+        if ($plugininfo->versiondisk < 3025022800) {
             $mform->addElement('static', 'noreport', null, get_string('noreportplugin', 'paygw_bepaid'));
         }
 
