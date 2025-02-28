@@ -180,8 +180,9 @@ class recurrent_payments extends \core\task\scheduled_task {
                "credit_card" => [
                    "token" => $data->invoiceid,
                ],
-               "notification_url" => null,
+               "notification_url" => $CFG->wwwroot . '/payment/gateway/bepaid/recurrent.php',
                "tracking_id" => $newpaymentid,
+               "customer" => [ 'email' => $user->email ],
             ];
 
             if ($config->istestmode) {
@@ -209,6 +210,11 @@ class recurrent_payments extends \core\task\scheduled_task {
             $curl = new \curl();
             $jsonresponse = $curl->post($location, $jsondata, $options);
 
+            if (!empty($curl->errno)) {
+                mtrace("$data->paymentid curl error.");
+                continue;
+            }
+
             $response = json_decode($jsonresponse);
 
             if (
@@ -222,11 +228,10 @@ class recurrent_payments extends \core\task\scheduled_task {
                     $newtx->success = 1;
                 }
 
-                $data->recurrent = time() + $config->recurrentperiod;
                 $newtx->invoiceid = $data->paymentid;
 
-                // Deliver order.
-                helper::deliver_order($component, $paymentarea, $itemid, $newpaymentid, $userid);
+                // Write status.
+                $DB->update_record('paygw_bepaid', $newtx);
 
                 mtrace("$data->paymentid done.");
                 // Notify user.
@@ -235,13 +240,8 @@ class recurrent_payments extends \core\task\scheduled_task {
                     $cost,
                     $payment->currency,
                     $data->paymentid,
-                    'Success recurrent',
-                    userdate($data->recurrent, "%d %B %k:00")
+                    'Recurrent created'
                 );
-
-                // Write status.
-                $DB->update_record('paygw_bepaid', $data);
-                $DB->update_record('paygw_bepaid', $newtx);
             } else {
                 echo serialize($jsonresponse) . "\n";
                 mtrace("$data->paymentid error");

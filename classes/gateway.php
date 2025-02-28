@@ -77,6 +77,11 @@ class gateway extends \core_payment\gateway {
         $mform->setType('recurrent', PARAM_INT);
         $mform->addHelpButton('recurrent', 'recurrent', 'paygw_bepaid');
 
+        $plugininfo = \core_plugin_manager::instance()->get_plugin_info('report_payments');
+        if ($plugininfo->versiondisk < 3025022800) {
+            $mform->addElement('static', 'noreport', null, get_string('noreportplugin', 'paygw_bepaid'));
+        }
+
         $options = [0 => get_string('no')];
         for ($i = 1; $i <= 28; $i++) {
             $options[] = $i;
@@ -112,11 +117,6 @@ class gateway extends \core_payment\gateway {
         $mform->addHelpButton('recurrentcost', 'recurrentcost', 'paygw_bepaid');
         $mform->setDefault('recurrentcost', 'fee');
         $mform->hideIf('recurrentcost', 'recurrent', "neq", 1);
-
-        $plugininfo = \core_plugin_manager::instance()->get_plugin_info('report_payments');
-        if ($plugininfo->versiondisk < 3025022800) {
-            $mform->addElement('static', 'noreport', null, get_string('noreportplugin', 'paygw_bepaid'));
-        }
 
         $mform->addElement(
             'advcheckbox',
