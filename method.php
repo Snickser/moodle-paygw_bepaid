@@ -70,7 +70,7 @@ if ($component == "enrol_yafee") {
         // Check uninterrupted cost.
         if ($cs->enrolperiod) {
             $price = $fee / $cs->enrolperiod;
-            $fee += (time() - $data->timeend) * $price;
+            $fee += round((time() - $data->timeend) * $price, 2);
             $uninterrupted = true;
         }
     }

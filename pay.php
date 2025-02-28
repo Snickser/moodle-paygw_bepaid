@@ -64,7 +64,7 @@ if ($config->maxcost && $cost > $config->maxcost) {
 }
 
 // Check uninterrupted mode.
-if ($component == "enrol_yafee") {
+if ($component == "enrol_yafee" && $config->fixcost) {
     $cs = $DB->get_record('enrol', ['id' => $itemid, 'enrol' => 'yafee']);
     if ($cs->customint5) {
         $data = $DB->get_record('user_enrolments', ['userid' => $USER->id, 'enrolid' => $cs->id]);
