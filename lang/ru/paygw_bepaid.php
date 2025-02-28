@@ -71,7 +71,7 @@ $string['message_success_recurrent'] = 'Здравствуйте, {$a->firstname
 Следующий автоматический платёж назначен на {$a->nextpay}.
 Отключить регулярные платежи можно в разделе Отчёты (оплата) в личном профиле {$a->url}/user/profile.php';
 $string['messagesubject'] = 'Уведомление о платеже ({$a})';
-$string['noreportplugin'] = '<font color=red>Не установлен report_payments плагин, вы не сможете отменить регулярные платежи.</font>';
+$string['noreportplugin'] = '<font color=red>Не установлен report_payments плагин, вы не сможете отменять регулярные платежи студентов.</font>';
 $string['password'] = 'Резервный пароль';
 $string['password_error'] = 'Введён неверный платёжный пароль';
 $string['password_help'] = 'С помощью этого пароля можно обойти процесс отплаты. Может быть полезен когда нет возможности произвести оплату.';
@@ -88,7 +88,7 @@ $string['paymore'] = 'Если вы хотите заплатить больше
 $string['plastic'] = 'VISA, MasterCard, МИР';
 $string['pluginname'] = 'Платежи биПейд';
 $string['pluginname_desc'] = 'Плагин позволяет получать платежи через биПейд.';
-$string['pubkey'] = 'Public key';
+$string['pubkey'] = 'Public Key';
 $string['recurrent'] = 'Включить регулярные платежи';
 $string['recurrent_help'] = 'Регулярные (рекуррентные) платежи исполняются по таймеру без участия студента, данные первого платежа сохраняются на стороне банка и используются повторно, с некоторой периодичностью.';
 $string['recurrentcost'] = 'Стоимость регулярного платежа';

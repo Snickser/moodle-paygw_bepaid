@@ -180,7 +180,7 @@ class recurrent_payments extends \core\task\scheduled_task {
                "credit_card" => [
                    "token" => $data->invoiceid,
                ],
-               "notification_url" => null,
+               "notification_url" => $CFG->wwwroot . '/payment/gateway/bepaid/recurrent.php',
                "tracking_id" => $newpaymentid,
             ];
 
