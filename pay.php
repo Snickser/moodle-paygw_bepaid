@@ -185,7 +185,6 @@ $payment->checkout = [
         "language" => current_language(),
         "customer_fields" => [
             "visible" => ['email'],
-            "read_only" => ['email'],
         ],
     ],
     "customer" => [
@@ -230,7 +229,7 @@ $response = json_decode($jsonresponse);
 
 if (!isset($response->checkout)) {
     $DB->delete_records('paygw_bepaid', ['id' => $transactionid]);
-    $error = $response->description;
+    $error = serialize($response);
     throw new \moodle_exception(get_string('payment_error', 'paygw_bepaid') . " ($error)", 'paygw_bepaid');
 }
 
@@ -238,7 +237,7 @@ $confirmationurl = $response->checkout->redirect_url;
 
 if (empty($confirmationurl)) {
     $DB->delete_records('paygw_bepaid', ['id' => $transactionid]);
-    $error = $response;
+    $error = serialize($response);
     throw new \moodle_exception(get_string('payment_error', 'paygw_bepaid') . " ($error)", 'paygw_bepaid');
 }
 
