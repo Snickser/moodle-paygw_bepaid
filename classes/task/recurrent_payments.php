@@ -221,16 +221,8 @@ class recurrent_payments extends \core\task\scheduled_task {
                 $response->transaction->status == 'successful' &&
                 $response->transaction->type == 'charge'
             ) {
-                // Set test status.
-                if ($response->transaction->test == true) {
-                    $newtx->success = 3;
-                } else {
-                    $newtx->success = 1;
-                }
-
-                $newtx->invoiceid = $data->paymentid;
-
                 // Write status.
+                $newtx->invoiceid = $data->paymentid;
                 $DB->update_record('paygw_bepaid', $newtx);
 
                 mtrace("$data->paymentid done.");
