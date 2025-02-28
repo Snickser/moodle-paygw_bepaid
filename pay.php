@@ -63,6 +63,19 @@ if ($config->maxcost && $cost > $config->maxcost) {
     $cost = $config->maxcost;
 }
 
+// Check uninterrupted mode.
+if ($component == "enrol_yafee") {
+    $cs = $DB->get_record('enrol', ['id' => $itemid, 'enrol' => 'yafee']);
+    if ($cs->customint5) {
+        $data = $DB->get_record('user_enrolments', ['userid' => $USER->id, 'enrolid' => $cs->id]);
+        // Check uninterrupted cost.
+        if ($cs->enrolperiod) {
+            $price = $cost / $cs->enrolperiod;
+            $cost += (time() - $data->timeend) * $price;
+        }
+    }
+}
+
 $cost = number_format($cost, 2, '.', '');
 
 // Get course and groups for user.

@@ -60,10 +60,20 @@ $fee = helper::get_rounded_cost($payable->get_amount(), $currency, $surcharge);
 // Get course info.
 $enrolperiod = '';
 $enrolperioddesc = '';
+$uninterrupted = false;
 // Check area.
 if ($component == "enrol_yafee") {
     $cs = $DB->get_record('enrol', ['id' => $itemid, 'enrol' => 'yafee']);
     $enrolperiod = $cs->enrolperiod;
+    if ($cs->customint5) {
+        $data = $DB->get_record('user_enrolments', ['userid' => $USER->id, 'enrolid' => $cs->id]);
+        // Check uninterrupted cost.
+        if ($cs->enrolperiod) {
+            $price = $fee / $cs->enrolperiod;
+            $fee += (time() - $data->timeend) * $price;
+            $uninterrupted = true;
+        }
+    }
 } else if ($component == "mod_gwpayments") {
     $cs = $DB->get_record('gwpayments', ['id' => $itemid]);
     $enrolperiod = $cs->costduration;
@@ -108,6 +118,10 @@ $templatedata->itemid      = $itemid;
 $templatedata->fee         = $fee;
 $templatedata->currency    = $currency;
 $templatedata->sesskey     = sesskey();
+
+if ($uninterrupted) {
+    $templatedata->uninterrupted = true;
+}
 
 if ($config->showduration) {
     $templatedata->enrolperiod = $enrolperiod;
