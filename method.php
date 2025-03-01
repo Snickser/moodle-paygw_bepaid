@@ -65,15 +65,29 @@ $uninterrupted = false;
 if ($component == "enrol_yafee") {
     $cs = $DB->get_record('enrol', ['id' => $itemid, 'enrol' => 'yafee']);
     $enrolperiod = $cs->enrolperiod;
+    // Check uninterrupted cost.
     if ($cs->customint5) {
         $data = $DB->get_record('user_enrolments', ['userid' => $USER->id, 'enrolid' => $cs->id]);
-        // Check uninterrupted cost.
-        if ($cs->enrolperiod && $data->timeend < time()) {
-            $price = $fee / $cs->enrolperiod;
-            $delta = ceil((time() - $data->timestart) / $cs->enrolperiod) * $cs->enrolperiod +
+        // Prepare month and year.
+        $t1 = getdate($data->timeend);
+        $t2 = getdate(time());
+        // Check periods.
+        if ($data->timeend < time()) {
+            if ($cs->enrolperiod) {
+                $price = $fee / $cs->enrolperiod;
+                $delta = ceil((time() - $data->timestart) / $cs->enrolperiod) * $cs->enrolperiod +
                      $data->timestart - $data->timeend;
-            $fee = $delta * $price;
-            $uninterrupted = true;
+                $fee = $delta * $price;
+                $uninterrupted = true;
+            } else if ($cs->customchar1 == 'month' && $cs->customint7 > 0) {
+                $delta = ($t2['year'] - $t1['year']) * 12 + $t2['mon'] - $t1['mon'] + 1;
+                $fee = $delta * $fee;
+                $uninterrupted = true;
+            } else if ($cs->customchar1 == 'year' && $cs->customint7 > 0) {
+                $delta = ($t2['year'] - $t1['year']) + 1;
+                $fee = $delta * $fee;
+                $uninterrupted = true;
+            }
         }
     }
 } else if ($component == "mod_gwpayments") {
@@ -134,7 +148,7 @@ $templatedata->passwordmode = $config->passwordmode;
 
 if (isset($config->maxcost)) {
     $templatedata->maxcost = $config->maxcost;
-    if ($config->maxcost &&  $fee > $config->maxcost) {
+    if ($config->maxcost && $fee > $config->maxcost) {
         $fee = $config->maxcost;
         $templatedata->fee = $fee;
     }

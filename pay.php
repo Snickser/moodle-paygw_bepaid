@@ -68,10 +68,26 @@ if ($component == "enrol_yafee" && $config->fixcost) {
     $cs = $DB->get_record('enrol', ['id' => $itemid, 'enrol' => 'yafee']);
     if ($cs->customint5) {
         $data = $DB->get_record('user_enrolments', ['userid' => $USER->id, 'enrolid' => $cs->id]);
-        // Check uninterrupted cost.
-        if ($cs->enrolperiod) {
-            $price = $cost / $cs->enrolperiod;
-            $cost += (time() - $data->timeend) * $price;
+        // Prepare month and year.
+        $t1 = getdate($data->timeend);
+        $t2 = getdate(time());
+        // Check periods.
+        if ($data->timeend < time()) {
+            if ($cs->enrolperiod) {
+                $price = $fee / $cs->enrolperiod;
+                $delta = ceil((time() - $data->timestart) / $cs->enrolperiod) * $cs->enrolperiod +
+                     $data->timestart - $data->timeend;
+                $cost = $delta * $price;
+                $uninterrupted = true;
+            } else if ($cs->customchar1 == 'month' && $cs->customint7 > 0) {
+                $delta = ($t2['year'] - $t1['year']) * 12 + $t2['mon'] - $t1['mon'] + 1;
+                $cost = $delta * $cost;
+                $uninterrupted = true;
+            } else if ($cs->customchar1 == 'year' && $cs->customint7 > 0) {
+                $delta = ($t2['year'] - $t1['year']) + 1;
+                $cost = $delta * $cost;
+                $uninterrupted = true;
+            }
         }
     }
 }
