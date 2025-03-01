@@ -183,7 +183,6 @@ class gateway extends \core_payment\gateway {
 
         $mform->addElement('text', 'maxcost', get_string('maxcost', 'paygw_bepaid'), ['size' => 10]);
         $mform->setType('maxcost', PARAM_TEXT);
-        $mform->disabledIf('maxcost', 'fixcost', "neq", 0);
 
         $mform->addElement('html', '<hr>');
         $plugininfo = \core_plugin_manager::instance()->get_plugin_info('paygw_bepaid');

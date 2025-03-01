@@ -68,9 +68,11 @@ if ($component == "enrol_yafee") {
     if ($cs->customint5) {
         $data = $DB->get_record('user_enrolments', ['userid' => $USER->id, 'enrolid' => $cs->id]);
         // Check uninterrupted cost.
-        if ($cs->enrolperiod) {
+        if ($cs->enrolperiod && $data->timeend < time()) {
             $price = $fee / $cs->enrolperiod;
-            $fee += round((time() - $data->timeend) * $price, 2);
+            $delta = ceil((time() - $data->timestart) / $cs->enrolperiod) * $cs->enrolperiod;
+            $fee = $delta * $price;
+//            $fee += round((time() - $data->timeend) * $price, 2);
             $uninterrupted = true;
         }
     }
@@ -132,15 +134,16 @@ $templatedata->passwordmode = $config->passwordmode;
 
 if (isset($config->maxcost)) {
     $templatedata->maxcost = $config->maxcost;
+    if ($config->maxcost < $fee) {
+        $fee = $config->maxcost;
+        $templatedata->fee = $fee;
+    }
 }
 
 $templatedata->fixcost = $config->fixcost;
 
 if (!$config->fixcost) {
-    if ($config->maxcost < $fee) {
-        $templatedata->suggest = $config->maxcost;
-        $templatedata->fee = $config->maxcost;
-    } else if ($config->suggest < $fee) {
+    if ($config->suggest < $fee) {
         $templatedata->suggest = $fee;
     } else {
         $templatedata->suggest = $config->suggest;
