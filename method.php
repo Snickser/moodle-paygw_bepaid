@@ -134,7 +134,7 @@ $templatedata->passwordmode = $config->passwordmode;
 
 if (isset($config->maxcost)) {
     $templatedata->maxcost = $config->maxcost;
-    if ($config->maxcost < $fee) {
+    if ($config->maxcost &&  $fee > $config->maxcost) {
         $fee = $config->maxcost;
         $templatedata->fee = $fee;
     }
