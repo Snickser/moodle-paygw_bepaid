@@ -69,10 +69,14 @@ if ($component == "enrol_yafee" && $config->fixcost) {
     if ($cs->customint5) {
         $data = $DB->get_record('user_enrolments', ['userid' => $USER->id, 'enrolid' => $cs->id]);
         // Prepare month and year.
-        $t1 = getdate($data->timeend);
+        $timeend = time();
+        if (isset($data->timeend)) {
+            $timeend = $data->timeend;
+        }
+        $t1 = getdate($timeend);
         $t2 = getdate(time());
         // Check periods.
-        if ($data->timeend < time()) {
+        if (isset($data->timeend) && $data->timeend < time()) {
             if ($cs->enrolperiod) {
                 $price = $fee / $cs->enrolperiod;
                 $delta = ceil((time() - $data->timestart) / $cs->enrolperiod) * $cs->enrolperiod +
