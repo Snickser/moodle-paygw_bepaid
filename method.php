@@ -72,7 +72,6 @@ if ($component == "enrol_yafee") {
             $price = $fee / $cs->enrolperiod;
             $delta = ceil((time() - $data->timestart) / $cs->enrolperiod) * $cs->enrolperiod;
             $fee = $delta * $price;
-//            $fee += round((time() - $data->timeend) * $price, 2);
             $uninterrupted = true;
         }
     }
