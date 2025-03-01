@@ -70,7 +70,8 @@ if ($component == "enrol_yafee") {
         // Check uninterrupted cost.
         if ($cs->enrolperiod && $data->timeend < time()) {
             $price = $fee / $cs->enrolperiod;
-            $delta = ceil((time() - $data->timestart) / $cs->enrolperiod) * $cs->enrolperiod;
+            $delta = ceil((time() - $data->timestart) / $cs->enrolperiod) * $cs->enrolperiod +
+                     $data->timestart - $data->timeend;
             $fee = $delta * $price;
             $uninterrupted = true;
         }
