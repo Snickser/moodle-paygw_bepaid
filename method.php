@@ -67,30 +67,31 @@ if ($component == "enrol_yafee") {
     $enrolperiod = $cs->enrolperiod;
     // Check uninterrupted cost.
     if ($cs->customint5) {
-        $data = $DB->get_record('user_enrolments', ['userid' => $USER->id, 'enrolid' => $cs->id]);
-        // Prepare month and year.
-        $timeend = time();
-        if (isset($data->timeend)) {
-            $timeend = $data->timeend;
-        }
-        $t1 = getdate($timeend);
-        $t2 = getdate(time());
-        // Check periods.
-        if ($data->timeend < time()) {
-            if ($cs->enrolperiod) {
-                $price = $fee / $cs->enrolperiod;
-                $delta = ceil((time() - $data->timestart) / $cs->enrolperiod) * $cs->enrolperiod +
-                     $data->timestart - $data->timeend + $cs->enrolperiod;
-                $fee = $delta * $price;
-                $uninterrupted = true;
-            } else if ($cs->customchar1 == 'month' && $cs->customint7 > 0) {
-                $delta = ($t2['year'] - $t1['year']) * 12 + $t2['mon'] - $t1['mon'] + 1;
-                $fee = $delta * $fee;
-                $uninterrupted = true;
-            } else if ($cs->customchar1 == 'year' && $cs->customint7 > 0) {
-                $delta = ($t2['year'] - $t1['year']) + 1;
-                $fee = $delta * $fee;
-                $uninterrupted = true;
+        if ($data = $DB->get_record('user_enrolments', ['userid' => $USER->id, 'enrolid' => $cs->id])) {
+            // Prepare month and year.
+            $timeend = time();
+            if (isset($data->timeend)) {
+                $timeend = $data->timeend;
+            }
+            $t1 = getdate($timeend);
+            $t2 = getdate(time());
+            // Check periods.
+            if ($data->timeend < time() && $data->timestart) {
+                if ($cs->enrolperiod) {
+                    $price = $fee / $cs->enrolperiod;
+                    $delta = ceil((time() - $data->timestart) / $cs->enrolperiod) * $cs->enrolperiod +
+                             $data->timestart - $data->timeend;
+                    $fee = $delta * $price;
+                    $uninterrupted = true;
+                } else if ($cs->customchar1 == 'month' && $cs->customint7 > 0) {
+                    $delta = ($t2['year'] - $t1['year']) * 12 + $t2['mon'] - $t1['mon'] + 1;
+                    $fee = $delta * $fee;
+                    $uninterrupted = true;
+                } else if ($cs->customchar1 == 'year' && $cs->customint7 > 0) {
+                    $delta = ($t2['year'] - $t1['year']) + 1;
+                    $fee = $delta * $fee;
+                    $uninterrupted = true;
+                }
             }
         }
     }
@@ -139,9 +140,6 @@ $templatedata->fee         = $fee;
 $templatedata->currency    = $currency;
 $templatedata->sesskey     = sesskey();
 
-if ($uninterrupted) {
-    $templatedata->uninterrupted = true;
-}
 
 if ($config->showduration) {
     $templatedata->enrolperiod = $enrolperiod;
@@ -168,6 +166,10 @@ if (!$config->fixcost) {
     }
 } else {
     $templatedata->localizedcost = \core_payment\helper::get_cost_as_string($fee, $currency);
+}
+
+if ($uninterrupted && $fee != $cs->cost) {
+    $templatedata->uninterrupted = true;
 }
 
 $templatedata->skipmode = $config->skipmode;

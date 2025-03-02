@@ -80,7 +80,7 @@ if ($component == "enrol_yafee" && $config->fixcost) {
             if ($cs->enrolperiod) {
                 $price = $cost / $cs->enrolperiod;
                 $delta = ceil((time() - $data->timestart) / $cs->enrolperiod) * $cs->enrolperiod +
-                     $data->timestart - $data->timeend + $cs->enrolperiod;
+                     $data->timestart - $data->timeend;
                 $cost = $delta * $price;
                 $uninterrupted = true;
             } else if ($cs->customchar1 == 'month' && $cs->customint7 > 0) {
