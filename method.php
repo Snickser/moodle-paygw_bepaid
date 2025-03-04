@@ -69,17 +69,18 @@ if ($component == "enrol_yafee") {
     if ($cs->customint5) {
         if ($data = $DB->get_record('user_enrolments', ['userid' => $USER->id, 'enrolid' => $cs->id])) {
             // Prepare month and year.
-            $timeend = time();
+            $ctime = time();
+            $timeend = $ctime;
             if (isset($data->timeend)) {
                 $timeend = $data->timeend;
             }
             $t1 = getdate($timeend);
-            $t2 = getdate(time());
+            $t2 = getdate($ctime);
             // Check periods.
-            if ($data->timeend < time() && $data->timestart) {
+            if ($data->timeend < $ctime && $data->timestart) {
                 if ($cs->enrolperiod) {
                     $price = $fee / $cs->enrolperiod;
-                    $delta = ceil((time() - $data->timestart) / $cs->enrolperiod) * $cs->enrolperiod +
+                    $delta = ceil(($ctime - $data->timestart) / $cs->enrolperiod) * $cs->enrolperiod +
                              $data->timestart - $data->timeend;
                     $fee = $delta * $price;
                     $uninterrupted = true;
@@ -139,7 +140,6 @@ $templatedata->itemid      = $itemid;
 $templatedata->fee         = $fee;
 $templatedata->currency    = $currency;
 $templatedata->sesskey     = sesskey();
-
 
 if ($config->showduration) {
     $templatedata->enrolperiod = $enrolperiod;
