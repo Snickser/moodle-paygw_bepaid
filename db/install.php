@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * paygw_bepaid installer script.
  *
@@ -21,8 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-function xmldb_paygw_bepaid_install()
-{
+function xmldb_paygw_bepaid_install() {
     global $CFG;
 
     // Enable the bank payment gateway on installation. It still needs to be configured and enabled for accounts.
