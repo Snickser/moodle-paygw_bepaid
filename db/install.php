@@ -23,7 +23,7 @@
  */
 
 /**
- * Enabler for mod_gwpayments
+ * Enabler
  *
  * @return boolean
  */
