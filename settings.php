@@ -30,8 +30,8 @@ if ($ADMIN->fulltree) {
 
     $settings->add(new admin_setting_heading(
         'paygw_bepaid_settings',
+        get_string('pluginname_desc', 'paygw_bepaid'),
         $donate,
-        get_string('pluginname_desc', 'paygw_bepaid')
     ));
     \core_payment\helper::add_common_gateway_settings($settings, 'paygw_bepaid');
 }
