@@ -94,6 +94,7 @@ if ($component == "enrol_yafee") {
                     $fee = $delta * $fee;
                     $uninterrupted = true;
                 }
+                $fee = helper::get_rounded_cost($fee, $currency, $surcharge);
             }
         }
     }

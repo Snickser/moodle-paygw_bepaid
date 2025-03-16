@@ -138,5 +138,5 @@ $string['usedetails_help'] = 'Display a button or password in a collapsed block.
 $string['usedetails_text'] = 'Click here if you are unable to donate.';
 $string['vatcode'] = 'VAT rate';
 $string['vatcode_help'] = 'VAT rate according to bePaid documentation.';
-
 $string['wallet'] = 'YooMoney wallet';
+$string['uninterrupted_desc'] = 'The price for the course is formed taking into account the missed time of the period you have not paid for.';
