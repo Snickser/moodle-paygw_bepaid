@@ -34,6 +34,7 @@ TRX TRGMc3b63Lus6ehLasbbHxsb2rHky5LbPe<br>
 BTC 1GFTTPCgRTC8yYL1gU7wBZRfhRNRBdLZsq<br>
 <iframe src="https://yoomoney.ru/quickpay/fundraise/button?billNumber=143H2JO3LLE.240720"
 width="330" height="50" frameborder="0" allowtransparency="true" scrolling="no"></iframe>';
+$string['enrolperiod'] = 'Enrolment duration ({$a->desc}): {$a->count}';
 $string['error_notvalidpayment'] = 'FAIL. Not a valid payment';
 $string['error_notvalidtxid'] = 'FAIL. Not a valid transaction id';
 $string['error_txdatabase'] = 'Error write TX data to database';

@@ -40,6 +40,7 @@ TRX TRGMc3b63Lus6ehLasbbHxsb2rHky5LbPe<br>
 BTC 1GFTTPCgRTC8yYL1gU7wBZRfhRNRBdLZsq<br>
 <iframe src="https://yoomoney.ru/quickpay/fundraise/button?billNumber=143H2JO3LLE.240720"
 width="330" height="50" frameborder="0" allowtransparency="true" scrolling="no"></iframe>';
+$string['enrolperiod'] = 'Продолжительность обучения ({$a->desc}): {$a->count}';
 $string['error_txdatabase'] = 'Error write TX data to database';
 $string['fixcost'] = 'Режим фиксированной цены';
 $string['fixcost_help'] = 'Отключает для студентов возможность оплаты произвольной суммой.';
