@@ -135,10 +135,10 @@ $string['taxsystemcode_help'] = 'Type of tax system for generating checks:<br>
 4 - Single tax on imputed income (UTII)<br>
 5 - Unified Agricultural Tax (UST)<br>
 6 - Patent taxation system';
+$string['uninterrupted_desc'] = 'The price for the course is formed taking into account the missed time of the period you have not paid for.';
 $string['usedetails'] = 'Make it collapsible';
 $string['usedetails_help'] = 'Display a button or password in a collapsed block.';
 $string['usedetails_text'] = 'Click here if you are unable to donate.';
 $string['vatcode'] = 'VAT rate';
 $string['vatcode_help'] = 'VAT rate according to bePaid documentation.';
 $string['wallet'] = 'YooMoney wallet';
-$string['uninterrupted_desc'] = 'The price for the course is formed taking into account the missed time of the period you have not paid for.';
