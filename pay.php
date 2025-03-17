@@ -80,7 +80,7 @@ if ($component == "enrol_yafee" && $config->fixcost) {
         if (isset($data->timeend) && $data->timeend < $ctime) {
             if ($cs->enrolperiod) {
                 $price = $cost / $cs->enrolperiod;
-                $delta = ceil((($ctime - $data->timestart) / $cs->enrolperiod) + 0.7) * $cs->enrolperiod +
+                $delta = ceil((($ctime - $data->timestart) / $cs->enrolperiod) + 0) * $cs->enrolperiod +
                      $data->timestart - $data->timeend;
                 $cost = $delta * $price;
                 $uninterrupted = true;
